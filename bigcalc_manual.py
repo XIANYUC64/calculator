@@ -2,6 +2,8 @@
 
 import sys
 
+NEG_ONE = int.__sub__(0, 1)
+
 
 def _strip_leading_zeros(txt):
     idx = 0
@@ -22,7 +24,7 @@ def _compare(a, b):
     if la > lb:
         return 1
     if la < lb:
-        return -1
+        return NEG_ONE
     i = 0
     while i < la:
         ca = a[i]
@@ -30,14 +32,14 @@ def _compare(a, b):
         if ca > cb:
             return 1
         if ca < cb:
-            return -1
+            return NEG_ONE
         i = int.__add__(i, 1)
     return 0
 
 
 def add_strings(a, b):
-    a = a[::-1]
-    b = b[::-1]
+    a = ''.join(reversed(a))
+    b = ''.join(reversed(b))
     la = len(a)
     lb = len(b)
     mx = la if la > lb else lb
@@ -60,8 +62,8 @@ def add_strings(a, b):
 def sub_strings(a, b):
     if _compare(a, b) < 0:
         raise ValueError('Negative result')
-    a = a[::-1]
-    b = b[::-1]
+    a = ''.join(reversed(a))
+    b = ''.join(reversed(b))
     la = len(a)
     lb = len(b)
     out = []
@@ -84,8 +86,8 @@ def sub_strings(a, b):
 
 
 def mul_strings(a, b):
-    a = a[::-1]
-    b = b[::-1]
+    a = ''.join(reversed(a))
+    b = ''.join(reversed(b))
     la = len(a)
     lb = len(b)
     res = [0 for _ in range(int.__add__(la, lb))]
