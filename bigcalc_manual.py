@@ -7,7 +7,7 @@ def _strip_leading_zeros(txt):
     idx = 0
     ln = len(txt)
     while idx < ln and txt[idx] == '0':
-        idx = int.__add__(idx, 1)
+        idx += 1
     res = txt[idx:]
     if res:
         return res
@@ -31,7 +31,7 @@ def _compare(a, b):
             return 1
         if ca < cb:
             return -1
-        i = int.__add__(i, 1)
+        i += 1
     return 0
 
 
@@ -45,15 +45,15 @@ def add_strings(a, b):
     out = []
     i = 0
     while i < mx:
-        da = int(a[i]) if i < la else 0
-        db = int(b[i]) if i < lb else 0
-        s = sum((da, db, carry))
-        res = divmod(s, 10)
-        carry = res[0]
-        out.append(str(res[1]))
-        i = int.__add__(i, 1)
+        da = ord(a[i]) - 48 if i < la else 0
+        db = ord(b[i]) - 48 if i < lb else 0
+        s = da + db + carry
+        carry = s // 10
+        digit = s % 10
+        out.append(chr(48 + digit))
+        i += 1
     if carry:
-        out.append(str(carry))
+        out.append(chr(48 + carry))
     return ''.join(reversed(out))
 
 
@@ -68,17 +68,17 @@ def sub_strings(a, b):
     borrow = 0
     i = 0
     while i < la:
-        da = int(a[i])
-        db = int(b[i]) if i < lb else 0
-        temp = int.__sub__(da, borrow)
+        da = ord(a[i]) - 48
+        db = ord(b[i]) - 48 if i < lb else 0
+        temp = da - borrow
         if temp < db:
-            temp = int.__add__(temp, 10)
+            temp += 10
             borrow = 1
         else:
             borrow = 0
-        digit = int.__sub__(temp, db)
-        out.append(str(digit))
-        i = int.__add__(i, 1)
+        digit = temp - db
+        out.append(chr(48 + digit))
+        i += 1
     result = ''.join(reversed(out))
     return _strip_leading_zeros(result)
 
@@ -88,25 +88,22 @@ def mul_strings(a, b):
     b = b[::-1]
     la = len(a)
     lb = len(b)
-    res = [0 for _ in range(int.__add__(la, lb))]
+    res = [0 for _ in range(la + lb)]
     ia = 0
     while ia < la:
         carry = 0
-        da = int(a[ia])
+        da = ord(a[ia]) - 48
         ib = 0
         while ib < lb:
-            db = int(b[ib])
-            pos = int.__add__(ia, ib)
-            prod = int.__mul__(da, db)
-            prod = int.__add__(prod, carry)
-            prod = int.__add__(prod, res[pos])
-            div_res = divmod(prod, 10)
-            carry = div_res[0]
-            res[pos] = div_res[1]
-            ib = int.__add__(ib, 1)
-        res[int.__add__(ia, lb)] = int.__add__(res[int.__add__(ia, lb)], carry)
-        ia = int.__add__(ia, 1)
-    out = ''.join(str(d) for d in reversed(res))
+            db = ord(b[ib]) - 48
+            pos = ia + ib
+            prod = da * db + carry + res[pos]
+            carry = prod // 10
+            res[pos] = prod % 10
+            ib += 1
+        res[ia + lb] += carry
+        ia += 1
+    out = ''.join(chr(48 + d) for d in reversed(res))
     return _strip_leading_zeros(out)
 
 
@@ -120,12 +117,12 @@ def div_strings(a, b):
     out = []
     rem = ''
     for ch in a:
-        rem = _strip_leading_zeros(''.join((rem, ch)))
+        rem = _strip_leading_zeros(rem + ch)
         digit = 0
         while _compare(rem, b) >= 0:
             rem = sub_strings(rem, b)
-            digit = int.__add__(digit, 1)
-        out.append(str(digit))
+            digit += 1
+        out.append(chr(48 + digit))
     return _strip_leading_zeros(''.join(out))
 
 
